@@ -1,0 +1,21 @@
+USE DATABASE YELPDB;
+
+create or replace table yelp_Reviews (review_text variant);
+
+COPY INTO yelp_Reviews
+FROM 's3://aryan.yelp.bucket/yelp.data/'
+CREDENTIALS = (
+AWS_KEY_ID = '**'
+AWS_SECRET_KEY = '**'
+)
+FILE_FORMAT = (Type = JSON);
+
+create or replace table tbl_yelp_reviews as
+select review_text:business_id::string as bussiness_id,
+review_text:date::date as review_date,
+review_text:user_id::string as user_id,
+review_text:stars::number as review_stars,
+review_text:text::String as review_text,
+analyze_sentiment(review_text) as user_sentiments
+
+from yelp_reviews limit 1

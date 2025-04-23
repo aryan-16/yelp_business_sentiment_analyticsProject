@@ -1,0 +1,120 @@
+-- Task 1 find number of business in each category
+use database yelpdb;
+Select  A.value as category , count(business_id) as number_of_business
+from tbl_yelp_business
+, lateral split_to_table(categories , ',') A
+group by category
+order by number_of_business desc
+
+
+-- Task 2 find top 10 users who have reviewed most business in restro category
+use database yelpdb;
+select r.user_id , count(r.review_text) as number_of_reviews ,
+       AVG(r.review_stars) as average_stars_given
+from tbl_yelp_business b 
+     inner join tbl_yelp_reviews r on b.business_id = r.bussiness_id
+where categories ilike '%restaurants%'
+group by r.user_id
+order by number_of_reviews DESC limit 10;
+
+
+-- Task3 Find most popular categories of business based on number of reviews
+use database yelpdb;
+Select  TRIM(A.value) AS category ,  SUM(review_count) AS total_reviews
+from tbl_yelp_business
+, lateral split_to_table(categories , ',') A
+group by TRIM(A.value)
+order by total_reviews DESC limit 5
+
+
+-- task4 find the top 3 recent reviews for each business
+with cte as (
+select r.* , b.business_name , row_number() over(partition by r.bussiness_id order by review_date 
+      DESC) as rn
+from tbl_yelp_business b 
+     inner join tbl_yelp_reviews r on b.business_id = r.bussiness_id
+)
+select *
+from cte 
+where rn<=3
+
+
+-- Task5 find the month with highest number of reviews
+select month(review_date) as review_month , count(*) as number_of_reviews
+from tbl_yelp_reviews
+group by 1
+order by 2 desc limit 3
+
+
+-- Task6  find percentage of 5 star reviews of each business
+select b.business_id , b.business_name , count(*) as total_reviews , 
+      sum(case when  r.review_stars =5 then 1 else 0 end) as star5_reviews,
+      (star5_reviews*100/total_reviews) as percentage_5stars
+from tbl_yelp_business b 
+     inner join tbl_yelp_reviews r on b.business_id = r.bussiness_id
+group by 1,2
+order by 5 desc
+
+
+
+--task7 find top5 most reviewd business in each city
+WITH cte AS (
+  SELECT  
+    b.city,
+    b.business_name, 
+    b.review_count,
+    ROW_NUMBER() OVER (PARTITION BY b.city ORDER BY b.review_count DESC) AS rn
+  FROM tbl_yelp_business b
+)
+SELECT *
+FROM cte 
+WHERE rn <= 5;
+
+
+
+--Task8 find the average rating of business that has atleat 100 reviews
+SELECT 
+  b.business_name,
+  b.business_id,
+  AVG(r.review_stars) AS avg_review
+FROM tbl_yelp_business b
+INNER JOIN tbl_yelp_reviews r 
+  ON b.business_id = r.bussiness_id
+WHERE b.review_count >= 100
+GROUP BY b.business_name, b.business_id;
+
+
+
+--task9 list the top 10 users who have written the most reviews along with business they reviewd
+
+USE DATABASE yelpdb;
+-- Step 1: Get Top 10 Users by Review Count
+WITH top_users AS (
+  SELECT 
+    user_id, 
+    COUNT(*) AS number_of_reviews
+  FROM tbl_yelp_reviews
+  GROUP BY user_id
+  ORDER BY number_of_reviews DESC
+  LIMIT 10
+)
+
+-- Step 2: Join Back to Get Business Names They Reviewed
+SELECT 
+  t.user_id,
+  t.number_of_reviews,
+  r.bussiness_id,
+  b.business_name
+FROM top_users t
+JOIN tbl_yelp_reviews r ON t.user_id = r.user_id
+JOIN tbl_yelp_business b ON r.bussiness_id = b.business_id;
+
+
+
+--task 10 find the top10 business with positive sentiment reviews
+select r.bussiness_id , b.business_name , count(*) as total_positive_reviews
+from tbl_yelp_business b 
+     inner join tbl_yelp_reviews r on b.business_id = r.bussiness_id
+where r.user_sentiments = 'Positive' OR r.user_sentiments='Strongly Positive'
+group by 1,2
+order by 3 desc limit 10

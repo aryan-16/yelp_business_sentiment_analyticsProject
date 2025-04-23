@@ -1,0 +1,31 @@
+USE DATABASE yelpdb;
+
+CREATE OR REPLACE FUNCTION analyze_sentiment(text STRING)
+RETURNS STRING
+LANGUAGE PYTHON
+RUNTIME_VERSION = '3.8'
+PACKAGES = ('vaderSentiment')
+HANDLER = 'sentiment_analyzer'
+AS $$
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+analyzer = SentimentIntensityAnalyzer()
+
+def sentiment_analyzer(text):
+    if not text:
+        return 'Neutral'
+
+    scores = analyzer.polarity_scores(text)
+    compound = scores['compound']
+
+    if compound >= 0.6:
+        return 'Strongly Positive'
+    elif compound > 0.05:
+        return 'Positive'
+    elif compound >= -0.05 and compound <= 0.05:
+        return 'Neutral'
+    elif compound <= -0.6:
+        return 'Strongly Negative'
+    else:
+        return 'Negative'
+$$;
