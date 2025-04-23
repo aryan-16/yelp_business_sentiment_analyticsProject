@@ -1,0 +1,54 @@
+
+---
+
+## ✅ Tasks Covered
+
+| Task No. | Description |
+|----------|-------------|
+| **2** | Top 10 users who have reviewed the most restaurants |
+| **3** | Most popular categories based on number of reviews |
+| **4** | Top 3 most recent reviews for each business |
+| **7** | Top 5 most reviewed businesses in each city |
+| **8** | Average rating of businesses with at least 100 reviews |
+| **9** | Top 10 users with the businesses they reviewed |
+| **UDF** | Python UDF for sentiment analysis using `vaderSentiment` |
+
+---
+
+## 🧠 Key Concepts Used
+
+- ✅ SQL Joins
+- ✅ Window Functions (`ROW_NUMBER()`)
+- ✅ Common Table Expressions (CTEs)
+- ✅ Aggregations (`AVG`, `COUNT`, `SUM`)
+- ✅ Subqueries & `HAVING` Clauses
+- ✅ Python UDFs in Snowflake (for sentiment analysis)
+
+---
+
+## 💻 Tech Stack
+
+- **Snowflake SQL**
+- **Python (UDFs)**
+- **AWS + Snowflake (ETL in progress)**
+- **MySQL & PostgreSQL** (comfortably used in personal projects)
+
+---
+
+## 📌 Notes
+
+- All queries are tested in Snowflake and follow best practices for readability and modularity.
+- `review_text`, `review_count`, `categories`, and `business_name` are key fields used across analysis.
+
+---
+
+## 👨‍💻 Author
+
+**Aryan Arya**  
+🎓 B.Tech, Information Technology, IIIT Una  
+📧 [22312@iiitu.ac.in](mailto:22312@iiitu.ac.in)  
+🔗 [LinkedIn](https://www.linkedin.com/in/aryan-arya-533640244) | [GitHub](https://github.com/aryan-16)
+
+---
+
+Feel free to fork, star, or raise an issue if you'd like to collaborate or suggest improvements!
